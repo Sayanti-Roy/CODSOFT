@@ -1,0 +1,61 @@
+# Importing necessary libraries
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score, classification_report
+
+# Load the dataset from your file path
+url = r'C:\Users\roysa\Downloads\archive (1)\spam.csv'
+
+# Reading the CSV file with correct encoding
+df = pd.read_csv(url, encoding='ISO-8859-1')
+
+# Check the first few rows to inspect the structure
+print(df.head())
+print(df.columns)
+
+# Selecting only the first two columns (adjust based on your file structure)
+df = df.iloc[:, [0, 1]]  # Assuming the first two columns are label and message
+df.columns = ['label', 'message']
+
+# Map labels to numerical values (0 for ham/legitimate, 1 for spam)
+df['label'] = df['label'].map({'ham': 0, 'spam': 1})
+
+# Data preprocessing
+X = df['message']
+y = df['label']
+
+# Train-test split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Vectorizing the text data using TF-IDF
+vectorizer = TfidfVectorizer(stop_words='english')
+X_train_tfidf = vectorizer.fit_transform(X_train)
+X_test_tfidf = vectorizer.transform(X_test)
+
+# Model 1: Naive Bayes Classifier
+nb_model = MultinomialNB()
+nb_model.fit(X_train_tfidf, y_train)
+nb_predictions = nb_model.predict(X_test_tfidf)
+
+# Model 2: Logistic Regression
+lr_model = LogisticRegression(max_iter=1000)
+lr_model.fit(X_train_tfidf, y_train)
+lr_predictions = lr_model.predict(X_test_tfidf)
+
+# Model 3: Support Vector Machine (SVM)
+svm_model = SVC(kernel='linear')
+svm_model.fit(X_train_tfidf, y_train)
+svm_predictions = svm_model.predict(X_test_tfidf)
+
+# Evaluation
+print("Naive Bayes Accuracy:", accuracy_score(y_test, nb_predictions))
+print("Logistic Regression Accuracy:", accuracy_score(y_test, lr_predictions))
+print("SVM Accuracy:", accuracy_score(y_test, svm_predictions))
+
+# Detailed Classification Report for the best model
+print("\nClassification Report for Naive Bayes:")
+print(classification_report(y_test, nb_predictions))

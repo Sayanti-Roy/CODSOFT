@@ -8,7 +8,7 @@ from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, classification_report
 
 # Load the dataset from your file path
-url = r'C:\Users\roysa\Downloads\archive (1)\spam.csv'
+url = r' C:\Users\roysa\Downloads\archive (1)\spam.csv'
 
 # Reading the CSV file with correct encoding
 df = pd.read_csv(url, encoding='ISO-8859-1')
